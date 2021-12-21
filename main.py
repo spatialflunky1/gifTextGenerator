@@ -48,16 +48,17 @@ def draw_text(x, y, text):
 for frame in range(0,imageObject.n_frames):
     y = 0
     imageObject.seek(frame)
+    frame_object = imageObject.quantize(colors=254)
     if resize == "y":
-        imageObject = imageObject.resize((width, height), Image.ANTIALIAS)
-    width, height = imageObject.size
-    draw = ImageDraw.Draw(imageObject)
+        frame_object = frame_object.resize((width, height), Image.ANTIALIAS)
+    width, height = frame_object.size
+    draw = ImageDraw.Draw(frame_object)
     x = (width-draw.textsize(text_top, font=font)[0])/2
     draw_text(x,y,text_top)
     x = (width-draw.textsize(text_bottom, font=font)[0])/2
     y = height-fontsize-5
     draw_text(x,y,text_bottom)
-    imageObject.save("frames/frame" + str(frame) + ".bmp")
+    frame_object.save("frames/frame" + str(frame) + ".bmp")
 
 # Appends all bitmap images in the frame folder to the all_frames list
 files = os.listdir("frames/")
@@ -65,7 +66,6 @@ all_frames = []
 for frame in range(len(files)):
     if frame != 0:
         file = "frames/"+"frame"+str(frame)+".bmp"
-        print(file)
         loadedFrame = Image.open(file)
         loadedFrame.resize((width, height))
         all_frames.append(loadedFrame)
