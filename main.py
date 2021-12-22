@@ -1,12 +1,13 @@
-from tkinter import filedialog, Tk, Button
+from tkinter import filedialog, Tk, Button, Label, messagebox
+from tkinter.ttk import Progressbar
 from PIL import Image, ImageFont, ImageDraw
 import os
 from shutil import rmtree
 
 def getFilePath():
-    return filedialog.askopenfilename()
+    files = [("Gif images", "*.gif")]
+    return filedialog.askopenfilename(filetypes = files)
 
-width, height = 0, 0
 def getResizeSize(imageToResize):
     global width
     global height
@@ -21,10 +22,10 @@ def getResizeSize(imageToResize):
         return [width, height]
     return False
 
-def saveToFrame(image):
+def saveToFrame(image, font, fontsize):
     global width
     global height
-    size = getResizeSize(imageObject)
+    size = getResizeSize(image)
     text_top = input("Enter text to add (top): ").upper()
     text_bottom = input("Enter text to add (bottom): ").upper()
     for frame in range(0,image.n_frames):
@@ -67,27 +68,53 @@ def createGif():
         file.close()
 
 def chooseImage():
+    global filepath
     filepath = getFilePath()
-    return filepath
+    filename = filepath.split("/")[-1]
+    fileLabel.configure(text=filename)
 
 def createGifButton():
+    global filepath
+    try:
+        imageObject = Image.open(filepath)
+    except AttributeError:
+        messagebox.showerror("Error!", "No File Selected!")
+        return False
     try:
         rmtree("frames/")
     except FileNotFoundError:
         pass
     os.mkdir("frames/")
-    imageObject = Image.open(filepath)
-    shadowcolor = (0,0,0)
     fontsize = int(input("Enter Font Size: "))
     font = ImageFont.truetype("./impact.ttf", fontsize)
-    saveToFrame(imageObject)
+    saveToFrame(imageObject, font, fontsize)
     createGif()
     rmtree("frames/")
+    filepath = ""
+    fileLabel.configure(text="No File Selected")
 
 if __name__ == "__main__":
+    width, height = 0, 0
+    shadowcolor = (0,0,0)
+    filepath = ""
     root = Tk()
     root.title("Gif Text Generator")
-    root.geometry("800x600")
-    selectFile = Button(root, text="Select File", command=lambda:chooseImage())
-    selectFile.pack()
+    root.geometry("640x480")
+
+    selectFile = Button(root, command=lambda:chooseImage())
+    selectFile.place(relx=0.016, rely=0.792, height=44, width=87)
+    selectFile.configure(text="Select Gif")
+
+    outputGif = Button(root, command=lambda:createGifButton())
+    outputGif.place(relx=0.016, rely=0.896, height=44, width=87)
+    outputGif.configure(text="Create Gif")
+
+    progress = Progressbar(root)
+    progress.place(relx=0.172, rely=0.917, relwidth=0.797, relheight=0.0, height=22)
+    progress.configure(length="510")
+
+    fileLabel = Label(root)
+    fileLabel.place(relx=0.172, rely=0.813, height=31)
+    fileLabel.configure(text="No File Selected")
+
     root.mainloop()
