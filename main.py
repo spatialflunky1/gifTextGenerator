@@ -1,8 +1,8 @@
-from tkinter import filedialog, Tk, Button, Label, messagebox
-from tkinter.ttk import Progressbar
+from tkinter import filedialog, Tk, Button, Label, messagebox, Toplevel, ttk, Spinbox
 from PIL import Image, ImageFont, ImageDraw
 import os
 from shutil import rmtree
+import sys
 
 def getFilePath():
     files = [("Gif images", "*.gif")]
@@ -53,6 +53,7 @@ def saveToFrame(image, font, fontsize):
         frame_object.save("frames/frame" + str(frame) + ".bmp")
 
 def createGif():
+
     files = os.listdir("frames/")
     all_frames = []
     for frame in range(len(files)):
@@ -73,13 +74,10 @@ def chooseImage():
     filename = filepath.split("/")[-1]
     fileLabel.configure(text=filename)
 
-def createGifButton():
+def createGifButton(box):
     global filepath
-    try:
-        imageObject = Image.open(filepath)
-    except AttributeError:
-        messagebox.showerror("Error!", "No File Selected!")
-        return False
+    box.destroy()
+    imageObject = Image.open(filepath)
     try:
         rmtree("frames/")
     except FileNotFoundError:
@@ -93,11 +91,54 @@ def createGifButton():
     filepath = ""
     fileLabel.configure(text="No File Selected")
 
+def resizeButtonPress(variable):
+    print(variable)
+
+def gifConfiguration():
+    global resize
+    if filepath == "":
+        messagebox.showerror("Error!", "No File Selected!")
+    else:
+        configBox = Toplevel()
+        configBox.geometry("484x320")
+        configBox.title("Configure Gif")
+
+        okButton = ttk.Button(configBox)
+        okButton.place(relx=0.661, rely=0.906, height=25, width=76)
+        okButton.configure(text="Ok", command=lambda: createGifButton(configBox))
+
+        cancelButton = ttk.Button(configBox)
+        cancelButton.place(relx=0.826, rely=0.906, height=25, width=76)
+        cancelButton.configure(text="Cancel", command=lambda: configBox.destroy())
+
+        bottomSeperator = ttk.Separator(configBox)
+        bottomSeperator.place(relx=-0.085, rely=0.875,  relwidth=1.333)
+        topSeperator = ttk.Separator(configBox)
+        topSeperator.place(relx=0.31, rely=0.0,  relheight=0.875)
+        topSeperator.configure(orient="vertical")
+
+        fontSizeSelector = Spinbox(configBox, from_=1.0, to=1000.0)
+        fontSizeSelector.place(relx=0.103, rely=0.188, relheight=0.059, relwidth=0.079)
+
+        fontSizeLabel = Label(configBox)
+        fontSizeLabel.place(relx=0.083, rely=0.094, height=21, width=50)
+        fontSizeLabel.configure(text="Font Size:")
+
+        resizeCheck = ttk.Checkbutton(configBox)
+        resizeCheck.place(relx=0.066, rely=0.406, relwidth=0.151, relheight=0.0, height=21)
+        resizeCheck.configure(text="Resize Gif", variable=resize, command=lambda x = resize: resizeButtonPress(x))
+
 if __name__ == "__main__":
     width, height = 0, 0
     shadowcolor = (0,0,0)
     filepath = ""
+    resize = 0
     root = Tk()
+    style = ttk.Style()
+    # print(sys.platform)
+    # if sys.platform == "win32":
+    #     style.theme_use('vista')
+    root.resizable(False, False)
     root.title("Gif Text Generator")
     root.geometry("640x480")
 
@@ -105,11 +146,11 @@ if __name__ == "__main__":
     selectFile.place(relx=0.016, rely=0.792, height=44, width=87)
     selectFile.configure(text="Select Gif")
 
-    outputGif = Button(root, command=lambda:createGifButton())
+    outputGif = Button(root, command=lambda:gifConfiguration())
     outputGif.place(relx=0.016, rely=0.896, height=44, width=87)
     outputGif.configure(text="Create Gif")
 
-    progress = Progressbar(root)
+    progress = ttk.Progressbar(root)
     progress.place(relx=0.172, rely=0.917, relwidth=0.797, relheight=0.0, height=22)
     progress.configure(length="510")
 
