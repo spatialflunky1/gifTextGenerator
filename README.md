@@ -26,3 +26,5 @@ python3 main.py
 * Tkinter (Python module)
 
 * Pillow (Python module)
+
+* ttkthemes (Python module)

@@ -1,4 +1,4 @@
-from tkinter import filedialog, Tk, messagebox, Toplevel, ttk
+from tkinter import filedialog, Tk, messagebox, Toplevel, ttk, IntVar
 from ttkthemes import ThemedTk
 from PIL import Image, ImageFont, ImageDraw
 import os
@@ -92,8 +92,18 @@ def createGifButton(box):
     filepath = ""
     fileLabel.configure(text="No File Selected")
 
-def resizeButtonPress(variable):
-    print(variable)
+def resizeButtonPress(variable, widthEntry, widthLabel, heightEntry, heightLabel):
+    print(variable.get())
+    if variable.get() == 0:
+        widthEntry.place_forget()
+        widthLabel.place_forget()
+        heightEntry.place_forget()
+        heightLabel.place_forget()
+    elif variable.get() == 1:
+        widthEntry.place(relx=0.021, rely=0.656, height=20, relwidth=0.112)
+        widthLabel.place(relx=0.021, rely=0.563, height=21, width=48)
+        heightEntry.place(relx=0.167, rely=0.656, height=21, relwidth=0.112)
+        heightLabel.place(relx=0.186, rely=0.563, height=21, width=38)
 
 def gifConfiguration():
     global resize
@@ -104,6 +114,7 @@ def gifConfiguration():
         configBox.geometry("484x320")
         configBox.title("Configure Gif")
         configBox.configure(background="#ffffff")
+        configBox.resizable(False, False)
 
         okButton = ttk.Button(configBox)
         okButton.place(relx=0.661, rely=0.906, height=25, width=76)
@@ -126,9 +137,19 @@ def gifConfiguration():
         fontSizeLabel.place(relx=0.083, rely=0.094, height=21)
         fontSizeLabel.configure(text="Font Size:")
 
+        widthEntry = ttk.Entry(configBox)
+        widthLabel = ttk.Label(configBox)
+        widthLabel.configure(text="Width")
+
+        heightEntry = ttk.Entry(configBox)
+        heightLabel = ttk.Label(configBox)
+        heightLabel.configure(text="Height")
+
+        var = IntVar()
+        var.set(0)
         resizeCheck = ttk.Checkbutton(configBox)
         resizeCheck.place(relx=0.066, rely=0.406, relheight=0.0, height=30)
-        resizeCheck.configure(text="Resize Gif", variable=resize, command=lambda x = resize: resizeButtonPress(x))
+        resizeCheck.configure(text="Resize Gif", variable=var, command=lambda x = var: resizeButtonPress(x, widthEntry, widthLabel, heightEntry, heightLabel))
 
 if __name__ == "__main__":
     width, height = 0, 0
@@ -137,7 +158,8 @@ if __name__ == "__main__":
     resize = 0
     print(sys.platform)
     if sys.platform == "win32":
-        root = ThemedTk()
+        root = ThemedTk(theme="adapta")
+        root.configure(background='#ffffff')
     elif sys.platform == "linux":
         root = ThemedTk(theme="adapta")
         root.configure(background='#ffffff')
