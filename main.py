@@ -1,4 +1,5 @@
-from tkinter import filedialog, Tk, Button, Label, messagebox, Toplevel, ttk, Spinbox
+from tkinter import filedialog, Tk, messagebox, Toplevel, ttk
+from ttkthemes import ThemedTk
 from PIL import Image, ImageFont, ImageDraw
 import os
 from shutil import rmtree
@@ -102,6 +103,7 @@ def gifConfiguration():
         configBox = Toplevel()
         configBox.geometry("484x320")
         configBox.title("Configure Gif")
+        configBox.configure(background="#ffffff")
 
         okButton = ttk.Button(configBox)
         okButton.place(relx=0.661, rely=0.906, height=25, width=76)
@@ -117,15 +119,15 @@ def gifConfiguration():
         topSeperator.place(relx=0.31, rely=0.0,  relheight=0.875)
         topSeperator.configure(orient="vertical")
 
-        fontSizeSelector = Spinbox(configBox, from_=1.0, to=1000.0)
-        fontSizeSelector.place(relx=0.103, rely=0.188, relheight=0.059, relwidth=0.079)
+        fontSizeSelector = ttk.Spinbox(configBox, from_=1.0, to=1000.0)
+        fontSizeSelector.place(relx=0.103, rely=0.188, relheight=0.1, relwidth=0.079)
 
-        fontSizeLabel = Label(configBox)
-        fontSizeLabel.place(relx=0.083, rely=0.094, height=21, width=50)
+        fontSizeLabel = ttk.Label(configBox)
+        fontSizeLabel.place(relx=0.083, rely=0.094, height=21)
         fontSizeLabel.configure(text="Font Size:")
 
         resizeCheck = ttk.Checkbutton(configBox)
-        resizeCheck.place(relx=0.066, rely=0.406, relwidth=0.151, relheight=0.0, height=21)
+        resizeCheck.place(relx=0.066, rely=0.406, relheight=0.0, height=30)
         resizeCheck.configure(text="Resize Gif", variable=resize, command=lambda x = resize: resizeButtonPress(x))
 
 if __name__ == "__main__":
@@ -133,20 +135,23 @@ if __name__ == "__main__":
     shadowcolor = (0,0,0)
     filepath = ""
     resize = 0
-    root = Tk()
-    style = ttk.Style()
-    # print(sys.platform)
-    # if sys.platform == "win32":
-    #     style.theme_use('vista')
+    print(sys.platform)
+    if sys.platform == "win32":
+        root = ThemedTk()
+    elif sys.platform == "linux":
+        root = ThemedTk(theme="adapta")
+        root.configure(background='#ffffff')
+    else:
+        root = Tk()
     root.resizable(False, False)
     root.title("Gif Text Generator")
     root.geometry("640x480")
 
-    selectFile = Button(root, command=lambda:chooseImage())
+    selectFile = ttk.Button(root, command=lambda:chooseImage())
     selectFile.place(relx=0.016, rely=0.792, height=44, width=87)
     selectFile.configure(text="Select Gif")
 
-    outputGif = Button(root, command=lambda:gifConfiguration())
+    outputGif = ttk.Button(root, command=lambda:gifConfiguration())
     outputGif.place(relx=0.016, rely=0.896, height=44, width=87)
     outputGif.configure(text="Create Gif")
 
@@ -154,7 +159,7 @@ if __name__ == "__main__":
     progress.place(relx=0.172, rely=0.917, relwidth=0.797, relheight=0.0, height=22)
     progress.configure(length="510")
 
-    fileLabel = Label(root)
+    fileLabel = ttk.Label(root)
     fileLabel.place(relx=0.172, rely=0.813, height=31)
     fileLabel.configure(text="No File Selected")
 
