@@ -93,7 +93,6 @@ def createGifButton(box):
     fileLabel.configure(text="No File Selected")
 
 def resizeButtonPress(variable, widthEntry, widthLabel, heightEntry, heightLabel):
-    print(variable.get())
     if variable.get() == 0:
         widthEntry.place_forget()
         widthLabel.place_forget()
