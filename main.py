@@ -8,32 +8,17 @@ def getFilePath():
     files = [("Gif images", "*.gif")]
     return filedialog.askopenfilename(filetypes = files)
 
-def getResizeSize(imageToResize):
+def saveToFrame(image, font, fontsize, resize, text):
     global width
     global height
-    while True:
-        resize = input("Resize gif (y/n): ").lower()
-        if resize == "y" or resize == "n":
-            break
-        print("invalid response")
-    if resize == "y":
-        width = int(input("Width(current: " + str(imageToResize.size[0]) + "): "))
-        height = int(input("Height(current: " + str(imageToResize.size[1]) + "): "))
-        return [width, height]
-    return False
-
-def saveToFrame(image, font, fontsize):
-    global width
-    global height
-    size = getResizeSize(image)
-    text_top = input("Enter text to add (top): ").upper()
-    text_bottom = input("Enter text to add (bottom): ").upper()
+    text_top = text[0]
+    text_bottom = text[1]
     for frame in range(0,image.n_frames):
         y = 0
         image.seek(frame)
         frame_object = image.quantize(colors=253)
-        if size:
-            width, height = size
+        if resize:
+            width, height = resize
             frame_object = frame_object.resize((size[0], size[1]), Image.ANTIALIAS)
         width, height = frame_object.size
         draw = ImageDraw.Draw(frame_object)
@@ -53,7 +38,6 @@ def saveToFrame(image, font, fontsize):
         frame_object.save("frames/frame" + str(frame) + ".bmp")
 
 def createGif():
-
     files = os.listdir("frames/")
     all_frames = []
     for frame in range(len(files)):
@@ -74,7 +58,7 @@ def chooseImage():
     filename = filepath.split("/")[-1]
     fileLabel.configure(text=filename)
 
-def createGifButton(box):
+def createGifButton(box, resize, text):
     global filepath
     box.destroy()
     imageObject = Image.open(filepath)
@@ -83,9 +67,9 @@ def createGifButton(box):
     except FileNotFoundError:
         pass
     os.mkdir("frames/")
-    fontsize = int(input("Enter Font Size: "))
+    fontsize = text[2]
     font = ImageFont.truetype("./impact.ttf", fontsize)
-    saveToFrame(imageObject, font, fontsize)
+    saveToFrame(imageObject, font, fontsize, resize, text)
     createGif()
     rmtree("frames/")
     filepath = ""
@@ -114,14 +98,6 @@ def gifConfiguration():
         configBox.configure(background="#f7f7f7")
         configBox.resizable(False, False)
         configBox.focus()
-
-        okButton = ttk.Button(configBox)
-        okButton.place(relx=0.661, rely=0.906, height=25, width=76)
-        okButton.configure(text="Ok", command=lambda: createGifButton(configBox))
-
-        cancelButton = ttk.Button(configBox)
-        cancelButton.place(relx=0.826, rely=0.906, height=25, width=76)
-        cancelButton.configure(text="Cancel", command=lambda: configBox.destroy())
 
         bottomSeperator = ttk.Separator(configBox)
         bottomSeperator.place(relx=-0.085, rely=0.875,  relwidth=1.333)
@@ -162,6 +138,19 @@ def gifConfiguration():
         bottomLabel = ttk.Label(configBox)
         bottomLabel.place(relx=0.579, rely=0.5, height=21, width=75)
         bottomLabel.configure(text="Bottom Text")
+
+        if var.get() == 1:
+            resize = [widthEntry.get(), heightEntry.get()]
+        else:
+            resize = False
+
+        okButton = ttk.Button(configBox)
+        okButton.place(relx=0.661, rely=0.906, height=25, width=76)
+        okButton.configure(text="Ok", command=lambda x=topEntry.get(), y=bottomEntry.get(): createGifButton(configBox, resize, [x, y, int(fontSizeSelector.get())]))
+
+        cancelButton = ttk.Button(configBox)
+        cancelButton.place(relx=0.826, rely=0.906, height=25, width=76)
+        cancelButton.configure(text="Cancel", command=lambda: configBox.destroy())
 if __name__ == "__main__":
     width, height = 0, 0
     shadowcolor = (0,0,0)
