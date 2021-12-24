@@ -1,4 +1,4 @@
-from tkinter import filedialog, Tk, messagebox, Toplevel, ttk, IntVar
+from tkinter import filedialog, Tk, messagebox, Toplevel, ttk, IntVar, Text
 from ttkthemes import ThemedTk
 from PIL import Image, ImageFont, ImageDraw
 import os
@@ -112,8 +112,9 @@ def gifConfiguration():
         configBox = Toplevel()
         configBox.geometry("484x320")
         configBox.title("Configure Gif")
-        configBox.configure(background="#ffffff")
+        configBox.configure(background="#f7f7f7")
         configBox.resizable(False, False)
+        configBox.focus()
 
         okButton = ttk.Button(configBox)
         okButton.place(relx=0.661, rely=0.906, height=25, width=76)
@@ -130,6 +131,7 @@ def gifConfiguration():
         topSeperator.configure(orient="vertical")
 
         fontSizeSelector = ttk.Spinbox(configBox, from_=1.0, to=1000.0)
+        fontSizeSelector.insert(1, "1")
         fontSizeSelector.place(relx=0.103, rely=0.188, relheight=0.1, relwidth=0.079)
 
         fontSizeLabel = ttk.Label(configBox)
@@ -150,16 +152,24 @@ def gifConfiguration():
         resizeCheck.place(relx=0.066, rely=0.406, relheight=0.0, height=30)
         resizeCheck.configure(text="Resize Gif", variable=var, command=lambda x = var: resizeButtonPress(x, widthEntry, widthLabel, heightEntry, heightLabel))
 
+        topEntry = Text(configBox)
+        topEntry.place(relx=0.393, rely=0.156, height=50, relwidth=0.525)
+        topLabel = ttk.Label(configBox)
+        topLabel.place(relx=0.579, rely=0.063, height=21, width=52)
+        topLabel.configure(text="Top Text")
+
+        bottomEntry = Text(configBox)
+        bottomEntry.place(relx=0.393, rely=0.594, height=50, relwidth=0.525)
+        bottomLabel = ttk.Label(configBox)
+        bottomLabel.place(relx=0.579, rely=0.5, height=21, width=75)
+        bottomLabel.configure(text="Bottom Text")
 if __name__ == "__main__":
     width, height = 0, 0
     shadowcolor = (0,0,0)
     filepath = ""
     resize = 0
     print(sys.platform)
-    if sys.platform == "win32":
-        root = ThemedTk(theme="adapta")
-        root.configure(background='#ffffff')
-    elif sys.platform == "linux":
+    if sys.platform == "win32" or sys.platform == "linux":
         root = ThemedTk(theme="adapta")
         root.configure(background='#ffffff')
     else:
