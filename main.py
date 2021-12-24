@@ -1,5 +1,4 @@
-from tkinter import filedialog, Tk, messagebox, Toplevel, ttk, IntVar, Text
-from ttkthemes import ThemedTk
+from tkinter import filedialog, messagebox, Toplevel, ttk, IntVar, Text
 from PIL import Image, ImageFont, ImageDraw
 import os
 from shutil import rmtree
@@ -170,9 +169,11 @@ if __name__ == "__main__":
     resize = 0
     print(sys.platform)
     if sys.platform == "win32" or sys.platform == "linux":
+        from ttkthemes import ThemedTk
         root = ThemedTk(theme="adapta")
         root.configure(background='#ffffff')
     else:
+        from tkinter import Tk
         root = Tk()
     root.resizable(False, False)
     root.title("Gif Text Generator")
