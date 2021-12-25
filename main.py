@@ -146,7 +146,7 @@ def gifConfiguration():
 
         okButton = ttk.Button(configBox)
         okButton.place(relx=0.661, rely=0.906, height=25, width=76)
-        okButton.configure(text="Ok", command=lambda x=topEntry.get(), y=bottomEntry.get(): createGifButton(configBox, resize, [x, y, int(fontSizeSelector.get())]))
+        okButton.configure(text="Ok", command=lambda x=topEntry.get('1.0', 'end-1c'), y=bottomEntry.get('1.0', 'end-1c'): createGifButton(configBox, resize, [x, y, int(fontSizeSelector.get())]))
 
         cancelButton = ttk.Button(configBox)
         cancelButton.place(relx=0.826, rely=0.906, height=25, width=76)
