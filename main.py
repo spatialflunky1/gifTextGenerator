@@ -13,13 +13,14 @@ def saveToFrame(image, font, fontsize, resize, text):
     global height
     text_top = text[0]
     text_bottom = text[1]
+    print(resize)
     for frame in range(0,image.n_frames):
         y = 0
         image.seek(frame)
         frame_object = image.quantize(colors=253)
         if resize:
             width, height = resize
-            frame_object = frame_object.resize((size[0], size[1]), Image.ANTIALIAS)
+            frame_object = frame_object.resize((resize[0], resize[1]), Image.ANTIALIAS)
         width, height = frame_object.size
         draw = ImageDraw.Draw(frame_object)
         x = (width-draw.textsize(text_top, font=font)[0])/2
@@ -58,11 +59,15 @@ def chooseImage():
     filename = filepath.split("/")[-1]
     fileLabel.configure(text=filename)
 
-def createGifButton(box, resize, text):
+def createGifButton(box, text, width, height):
     global filepath
     box.destroy()
     imageObject = Image.open(filepath)
-    print(text)
+    print(var.get())
+    if var.get() == 1:
+        resize = [width, height]
+    else:
+        resize = False
     try:
         rmtree("frames/")
     except FileNotFoundError:
@@ -76,13 +81,13 @@ def createGifButton(box, resize, text):
     filepath = ""
     fileLabel.configure(text="No File Selected")
 
-def resizeButtonPress(variable, widthEntry, widthLabel, heightEntry, heightLabel):
-    if variable.get() == 0:
+def resizeButtonPress(widthEntry, widthLabel, heightEntry, heightLabel):
+    if var.get() == 0:
         widthEntry.place_forget()
         widthLabel.place_forget()
         heightEntry.place_forget()
         heightLabel.place_forget()
-    elif variable.get() == 1:
+    elif var.get() == 1:
         widthEntry.place(relx=0.021, rely=0.656, height=20, relwidth=0.112)
         widthLabel.place(relx=0.021, rely=0.563, height=21, width=48)
         heightEntry.place(relx=0.167, rely=0.656, height=21, relwidth=0.112)
@@ -122,11 +127,10 @@ def gifConfiguration():
         heightLabel = ttk.Label(configBox)
         heightLabel.configure(text="Height")
 
-        var = IntVar()
         var.set(0)
         resizeCheck = ttk.Checkbutton(configBox)
         resizeCheck.place(relx=0.066, rely=0.406, relheight=0.0, height=30)
-        resizeCheck.configure(text="Resize Gif", variable=var, command=lambda x = var: resizeButtonPress(x, widthEntry, widthLabel, heightEntry, heightLabel))
+        resizeCheck.configure(text="Resize Gif", variable=var, command=lambda: resizeButtonPress(widthEntry, widthLabel, heightEntry, heightLabel))
 
         topEntry = Text(configBox)
         topEntry.place(relx=0.393, rely=0.156, height=50, relwidth=0.525)
@@ -140,14 +144,9 @@ def gifConfiguration():
         bottomLabel.place(relx=0.579, rely=0.5, height=21, width=75)
         bottomLabel.configure(text="Bottom Text")
 
-        if var.get() == 1:
-            resize = [widthEntry.get(), heightEntry.get()]
-        else:
-            resize = False
-
         okButton = ttk.Button(configBox)
         okButton.place(relx=0.661, rely=0.906, height=25, width=76)
-        okButton.configure(text="Ok", command=lambda: createGifButton(configBox, resize, [topEntry.get('1.0', 'end-1c'), bottomEntry.get('1.0', 'end-1c'), int(fontSizeSelector.get())]))
+        okButton.configure(text="Ok", command=lambda: createGifButton(configBox, [topEntry.get('1.0', 'end-1c'), bottomEntry.get('1.0', 'end-1c'), int(fontSizeSelector.get())], int(widthEntry.get()), int(heightEntry.get())))
 
         cancelButton = ttk.Button(configBox)
         cancelButton.place(relx=0.826, rely=0.906, height=25, width=76)
@@ -168,6 +167,7 @@ if __name__ == "__main__":
     root.resizable(False, False)
     root.title("Gif Text Generator")
     root.geometry("640x480")
+    var = IntVar()
 
     selectFile = ttk.Button(root, command=lambda:chooseImage())
     selectFile.place(relx=0.016, rely=0.792, height=44, width=87)
