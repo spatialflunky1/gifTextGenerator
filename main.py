@@ -13,7 +13,6 @@ def saveToFrame(image, font, fontsize, resize, text):
     global height
     text_top = text[0]
     text_bottom = text[1]
-    print(resize)
     for frame in range(0,image.n_frames):
         y = 0
         image.seek(frame)
@@ -63,7 +62,6 @@ def createGifButton(box, text, width, height):
     global filepath
     box.destroy()
     imageObject = Image.open(filepath)
-    print(var.get())
     if var.get() == 1:
         resize = [width, height]
     else:
@@ -156,7 +154,6 @@ if __name__ == "__main__":
     shadowcolor = (0,0,0)
     filepath = ""
     resize = 0
-    print(sys.platform)
     if sys.platform == "win32" or sys.platform == "linux":
         from ttkthemes import ThemedTk
         root = ThemedTk(theme="adapta")
