@@ -11,6 +11,7 @@ def getFilePath():
 def saveToFrame(image, font, fontsize, resize, text):
     global width
     global height
+    global progressValue
     text_top = text[0]
     text_bottom = text[1]
     for frame in range(0,image.n_frames):
@@ -36,21 +37,31 @@ def saveToFrame(image, font, fontsize, resize, text):
         draw.text((x+2, y+2), text_bottom, font=font, fill=shadowcolor)
         draw.text((x, y),text_bottom,(255,255,255),font=font)
         frame_object.save("frames/frame" + str(frame) + ".bmp")
+        progressValue += 1
+        progress['value'] = int((progressValue/image.n_frames)*100)
+        root.update_idletasks()
+
 
 def createGif():
     files = os.listdir("frames/")
+    progressValue = 0
     all_frames = []
-    for frame in range(len(files)):
+    num_frames = range(len(files))
+    for frame in num_frames:
         if frame != 0:
             file = "frames/"+"frame"+str(frame)+".bmp"
             loadedFrame = Image.open(file)
             loadedFrame.resize((width, height))
             all_frames.append(loadedFrame)
+            progressValue += 1
+            progress['value'] = int((progressValue/num_frames[-1])*100)
+            root.update_idletasks()
     firstFrame = Image.open("frames/frame0.bmp")
     firstFrame.save('output.gif', save_all=True, append_images=all_frames[1:], loop=0)
     firstFrame.close()
     for file in all_frames:
         file.close()
+    messagebox.showinfo(title="Done", message="Gif successfully created!")
 
 def chooseImage():
     global filepath
@@ -63,7 +74,7 @@ def createGifButton(box, text, width, height):
     box.destroy()
     imageObject = Image.open(filepath)
     if var.get() == 1:
-        resize = [width, height]
+        resize = [int(width), int(height)]
     else:
         resize = False
     try:
@@ -144,12 +155,14 @@ def gifConfiguration():
 
         okButton = ttk.Button(configBox)
         okButton.place(relx=0.661, rely=0.906, height=25, width=76)
-        okButton.configure(text="Ok", command=lambda: createGifButton(configBox, [topEntry.get('1.0', 'end-1c'), bottomEntry.get('1.0', 'end-1c'), int(fontSizeSelector.get())], int(widthEntry.get()), int(heightEntry.get())))
+        okButton.configure(text="Ok", command=lambda: createGifButton(configBox, [topEntry.get('1.0', 'end-1c'), bottomEntry.get('1.0', 'end-1c'), int(fontSizeSelector.get())], widthEntry.get(), heightEntry.get()))
 
         cancelButton = ttk.Button(configBox)
         cancelButton.place(relx=0.826, rely=0.906, height=25, width=76)
         cancelButton.configure(text="Cancel", command=lambda: configBox.destroy())
+
 if __name__ == "__main__":
+    progressValue = 0
     width, height = 0, 0
     shadowcolor = (0,0,0)
     filepath = ""
