@@ -17,7 +17,7 @@ def saveToFrame(image, font, fontsize, resize, text):
     for frame in range(0,image.n_frames):
         y = 0
         image.seek(frame)
-        frame_object = image.quantize(colors=253)
+        frame_object = image.convert('P', palette=Image.ADAPTIVE, colors=253)
         if resize:
             width, height = resize
             frame_object = frame_object.resize((resize[0], resize[1]), Image.ANTIALIAS)
