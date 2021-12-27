@@ -1,12 +1,13 @@
-from tkinter import filedialog, messagebox, Toplevel, ttk, IntVar, Text
-from PIL import Image, ImageFont, ImageDraw
+from tkinter import filedialog, messagebox, Toplevel, ttk, IntVar, Text, Label
+from PIL import Image, ImageFont, ImageDraw, ImageTk
 import os
 from shutil import rmtree
 import sys
 
 def getFilePath():
     files = [("Gif images", "*.gif")]
-    return filedialog.askopenfilename(filetypes = files)
+    filepath = filedialog.askopenfilename(filetypes = files)
+    return filepath
 
 def saveToFrame(image, font, fontsize, resize, text):
     global width
@@ -36,6 +37,10 @@ def saveToFrame(image, font, fontsize, resize, text):
         draw.text((x-2, y+2), text_bottom, font=font, fill=shadowcolor)
         draw.text((x+2, y+2), text_bottom, font=font, fill=shadowcolor)
         draw.text((x, y),text_bottom,(255,255,255),font=font)
+        render = ImageTk.PhotoImage(frame_object)
+        img = Label(root, image=render)
+        img.image = render
+        img.place(x=150, y=100)
         frame_object.save("frames/frame" + str(frame) + ".bmp")
         progressValue += 1
         progress['value'] = int((progressValue/image.n_frames)*100)
@@ -53,6 +58,10 @@ def createGif():
             loadedFrame = Image.open(file)
             loadedFrame.resize((width, height))
             all_frames.append(loadedFrame)
+            render = ImageTk.PhotoImage(loadedFrame)
+            img = Label(root, image=render)
+            img.image = render
+            img.place(x=150, y=100)
             progressValue += 1
             progress['value'] = int((progressValue/num_frames[-1])*100)
             root.update_idletasks()
