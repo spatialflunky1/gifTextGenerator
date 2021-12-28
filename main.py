@@ -37,10 +37,12 @@ def saveToFrame(image, font, fontsize, resize, text):
         draw.text((x-2, y+2), text_bottom, font=font, fill=shadowcolor)
         draw.text((x+2, y+2), text_bottom, font=font, fill=shadowcolor)
         draw.text((x, y),text_bottom,(255,255,255),font=font)
-        render = ImageTk.PhotoImage(frame_object)
-        img = Label(root, image=render)
-        img.image = render
-        img.place(x=150, y=100)
+        # Saved for later as if the gif is too large it goes over the window elements
+        #
+        # render = ImageTk.PhotoImage(frame_object)
+        # img = Label(root, image=render)
+        # img.image = render
+        # img.place(x=150, y=100)
         frame_object.save("frames/frame" + str(frame) + ".bmp")
         progressValue += 1
         progress['value'] = int((progressValue/image.n_frames)*100)
@@ -58,10 +60,12 @@ def createGif():
             loadedFrame = Image.open(file)
             loadedFrame.resize((width, height))
             all_frames.append(loadedFrame)
-            render = ImageTk.PhotoImage(loadedFrame)
-            img = Label(root, image=render)
-            img.image = render
-            img.place(x=150, y=100)
+            # Saved for later as if the gif is too large it goes over the window elements
+            #
+            # render = ImageTk.PhotoImage(loadedFrame)
+            # img = Label(root, image=render)
+            # img.image = render
+            # img.place(x=150, y=100)
             progressValue += 1
             progress['value'] = int((progressValue/num_frames[-1])*100)
             root.update_idletasks()
@@ -78,7 +82,16 @@ def chooseImage():
     filename = filepath.split("/")[-1]
     fileLabel.configure(text=filename)
 
+def changeStatus(message, location):
+    global statusLabel
+    statusLabel.destroy()
+    statusLabel = ttk.Label(root)
+    statusLabel.configure(font="-family {Segoe UI} -size 20")
+    statusLabel.configure(text=message)
+    statusLabel.place(relx=location[0], rely=location[1], width=300)
+
 def createGifButton(box, text, width, height):
+    global statusLabel
     global filepath
     box.destroy()
     imageObject = Image.open(filepath)
@@ -93,11 +106,14 @@ def createGifButton(box, text, width, height):
     os.mkdir("frames/")
     fontsize = text[2]
     font = ImageFont.truetype("./impact.ttf", fontsize)
+    changeStatus("Status: Writing to frames", [0.281, 0.021])
     saveToFrame(imageObject, font, fontsize, resize, text)
+    changeStatus("Status: Saving to gif file", [0.281, 0.021])
     createGif()
     rmtree("frames/")
     filepath = ""
     fileLabel.configure(text="No File Selected")
+    changeStatus("Status: Ready", [0.375, 0.021])
 
 def resizeButtonPress(widthEntry, widthLabel, heightEntry, heightLabel):
     if var.get() == 0:
@@ -203,5 +219,10 @@ if __name__ == "__main__":
     fileLabel = ttk.Label(root)
     fileLabel.place(relx=0.172, rely=0.813, height=31)
     fileLabel.configure(text="No File Selected")
+
+    statusLabel = ttk.Label(root)
+    statusLabel.place(relx=0.375, rely=0.021, height=39)
+    statusLabel.configure(font="-family {Segoe UI} -size 20")
+    statusLabel.configure(text="Status: Ready")
 
     root.mainloop()
