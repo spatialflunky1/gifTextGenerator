@@ -8,6 +8,7 @@ Adds custom meme like impact font text to a gif
 - [x] Top and bottom text
 - [x] Tkinter GUI
 - [x] Working progress bar
+- [ ] fix color issues (brakes when at the max color limit)
 - [ ] Display Gif in GUI
 - [ ] Custom font
 - [ ] Auto sized font
